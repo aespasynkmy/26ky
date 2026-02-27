@@ -114,22 +114,6 @@
                 container.classList.add('image-loaded');
             };
             
-            // 图片加载失败
-            img.onerror = function() {
-                console.error('图片加载失败，请检查文件名和路径是否正确');
-                imageContainer.style.backgroundColor = '#333';
-                imageContainer.innerHTML = `
-                    <div style="color: white; text-align: center; padding: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                        <h2>图片加载失败</h2>
-                        <p>请检查：</p>
-                        <p>1. 图片文件名是否正确（当前尝试加载: ${imageUrl}）</p>
-                        <p>2. 图片是否与HTML文件在同一目录</p>
-                        <p>3. 图片是否已成功上传到GitHub</p>
-                    </div>
-                `;
-                container.classList.add('image-loaded');
-            };
-            
             // 开始加载图片
             img.src = imageUrl;
             
@@ -146,4 +130,5 @@
     </script>
 </body>
 </html>
+
 
