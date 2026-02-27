@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>全屏图片展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #000;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #fullscreen-image {
+            /* 图片路径在这里修改：将"your-image.jpg"替换为你的图片文件名 */
+            background-image: url('your-image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 确保图片在移动设备上正确显示 */
+        @media (orientation: portrait) {
+            #fullscreen-image {
+                background-size: contain;
+                background-color: #000;
+            }
+        }
+        
+        @media (orientation: landscape) {
+            #fullscreen-image {
+                background-size: cover;
+            }
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            z-index: 10;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 18px;
+        }
+        
+        .instructions code {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .github-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .github-link a {
+            color: white;
+            text-decoration: none;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .github-link a:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        /* 加载指示器 */
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 5;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* 图片加载完成时隐藏加载器 */
+        .image-loaded .loader {
+            display: none;
+        }
+        
+        /* 触摸提示 */
+        .tap-hint {
+            position: absolute;
+            bottom: 120px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        /* 隐藏说明的按钮 */
+        .hide-instructions {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 11;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="github-link">
+            <a href="https://github.com" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                GitHub
+            </a>
+        </div>
+        
+        <div class="loader"></div>
+        
+        <div class="image-container">
+            <!-- 这里是图片展示区域 -->
+            <div id="fullscreen-image"></div>
+        </div>
+        
+        <div class="tap-hint">轻触图片区域可隐藏/显示说明</div>
+        
+        <div class="instructions">
+            <h2>如何使用这个网页</h2>
+            <p>1. 将你的图片文件上传到GitHub仓库，与这个HTML文件在同一目录</p>
+            <p>2. 将第45行代码中的 <code>your-image.jpg</code> 替换为你的图片文件名</p>
+            <p>3. 访问 <code>https://你的用户名.github.io/仓库名</code> 查看效果</p>
+            
+            <button class="hide-instructions">隐藏说明</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageContainer = document.getElementById('fullscreen-image');
+            const loader = document.querySelector('.loader');
+            const container = document.querySelector('.container');
+            const instructions = document.querySelector('.instructions');
+            const hideButton = document.querySelector('.hide-instructions');
+            const tapHint = document.querySelector('.tap-hint');
+            
+            // 图片路径配置
+            // 修改下面这行，将 'your-image.jpg' 替换为你的图片文件名
+            const imageUrl = 'your-image.jpg';
+            
+            // 创建图片对象来预加载
+            const img = new Image();
+            
+            // 图片加载成功
+            img.onload = function() {
+                // 设置背景图片
+                imageContainer.style.backgroundImage = `url('${imageUrl}')`;
+                
+                // 隐藏加载器
+                container.classList.add('image-loaded');
+                
+                // 3秒后隐藏触摸提示
+                setTimeout(() => {
+                    tapHint.style.opacity = '0';
+                    tapHint.style.transition = 'opacity 1s';
+                }, 3000);
+            };
+            
+            // 图片加载失败
+            img.onerror = function() {
+                console.error('图片加载失败，请检查文件名和路径是否正确');
+                imageContainer.style.backgroundColor = '#333';
+                imageContainer.innerHTML = `
+                    <div style="color: white; text-align: center; padding: 20px;">
+                        <h2>图片加载失败</h2>
+                        <p>请检查：</p>
+                        <p>1. 图片文件名是否正确（当前尝试加载: ${imageUrl}）</p>
+                        <p>2. 图片是否与HTML文件在同一目录</p>
+                        <p>3. 图片是否已成功上传到GitHub</p>
+                    </div>
+                `;
+                container.classList.add('image-loaded');
+            };
+            
+            // 开始加载图片
+            img.src = imageUrl;
+            
+            // 点击图片区域切换说明显示/隐藏
+            imageContainer.addEventListener('click', function() {
+                if (instructions.style.display === 'none') {
+                    instructions.style.display = 'block';
+                    tapHint.style.display = 'block';
+                } else {
+                    instructions.style.display = 'none';
+                    tapHint.style.display = 'none';
+                }
+            });
+            
+            // 隐藏说明按钮
+            hideButton.addEventListener('click', function() {
+                instructions.style.display = 'none';
+                tapHint.style.display = 'none';
+            });
+            
+            // 处理移动设备手势
+            let touchStartY = 0;
+            let touchEndY = 0;
+            
+            imageContainer.addEventListener('touchstart', function(e) {
+                touchStartY = e.changedTouches[0].screenY;
+            });
+            
+            imageContainer.addEventListener('touchend', function(e) {
+                touchEndY = e.changedTouches[0].screenY;
+                
+                // 向上滑动显示说明，向下滑动隐藏说明
+                if (touchStartY - touchEndY > 50) {
+                    // 向上滑动
+                    instructions.style.display = 'block';
+                    tapHint.style.display = 'block';
+                } else if (touchEndY - touchStartY > 50) {
+                    // 向下滑动
+                    instructions.style.display = 'none';
+                    tapHint.style.display = 'none';
+                }
+            });
+            
+            // 防止双击缩放
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        });
+    </script>
+</body>
+</html>
