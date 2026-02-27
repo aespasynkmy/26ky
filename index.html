@@ -15,7 +15,7 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            background-color: #000;
+            background-color: #fff; /* 改为白色背景 */
         }
         
         .image-container {
@@ -25,6 +25,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            background-color: #fff; /* 添加白色背景 */
         }
         
         #fullscreen-image {
@@ -41,7 +42,7 @@
         @media (orientation: portrait) {
             #fullscreen-image {
                 background-size: contain;
-                background-color: #000;
+                background-color: #fff; /* 改为白色背景 */
             }
         }
         
@@ -51,7 +52,7 @@
             }
         }
         
-        /* 加载指示器 */
+        /* 加载指示器 - 调整为深色以便在白色背景上可见 */
         .loader {
             position: absolute;
             top: 50%;
@@ -59,9 +60,9 @@
             transform: translate(-50%, -50%);
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(0, 0, 0, 0.1); /* 改为深色边框 */
             border-radius: 50%;
-            border-top-color: #fff;
+            border-top-color: #333; /* 改为深色 */
             animation: spin 1s ease-in-out infinite;
             z-index: 5;
         }
@@ -99,7 +100,6 @@
             const container = document.querySelector('.image-container');
             
             // 图片路径配置
-            // 修改下面这行，将 'your-image.jpg' 替换为你的图片文件名
             const imageUrl = 'ky2.jpg';
             
             // 创建图片对象来预加载
@@ -112,6 +112,24 @@
                 
                 // 隐藏加载器
                 container.classList.add('image-loaded');
+            };
+            
+            // 图片加载失败
+            img.onerror = function() {
+                // 即使加载失败也隐藏加载器
+                container.classList.add('image-loaded');
+                console.error('图片加载失败，请检查文件名和路径是否正确');
+                
+                // 在白色背景上显示错误信息（深色文字）
+                imageContainer.innerHTML = `
+                    <div style="color: #333; text-align: center; padding: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h2 style="margin-bottom: 15px; color: #dc3545;">图片加载失败</h2>
+                        <p style="margin-bottom: 10px;">请检查：</p>
+                        <p style="margin-bottom: 5px;">1. 图片文件名是否正确（当前尝试加载: ${imageUrl}）</p>
+                        <p style="margin-bottom: 5px;">2. 图片是否与HTML文件在同一目录</p>
+                        <p style="margin-bottom: 5px;">3. 图片是否已成功上传到GitHub</p>
+                    </div>
+                `;
             };
             
             // 开始加载图片
@@ -130,8 +148,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
